@@ -119,6 +119,12 @@ double post(std::deque<std::string>& str) {
                 last.push_back(x_first / x_second);
 
             } else if (i == "tan") {
+                double xCos = cos(x_second * M_PI / 180);
+                if (xCos >= -1e-7 && xCos <= 1e-7) {
+                    Error = true;
+                    std::cout << "Division by zero in tan\n";
+                    return 0;
+                }
                 last.push_back(tan(x_second * M_PI / 180));
 
             } else if (i == "log2") {
