@@ -329,7 +329,7 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
 }
 
 void solve() {
-    for (int i = 0; i < 100; ++i) {
+    for (;;) {
         Error = false;
         std::vector<std::string> str;
         std::string input;
