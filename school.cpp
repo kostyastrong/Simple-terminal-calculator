@@ -206,14 +206,16 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
     bool lastOperIsUnaryMinus = false;
     bool lastOper = true;
     bool lastBrackets = false;
+    bool whereIsNumber = false;
 
     for (const std::string& i : str) {
         if (isNum(i)) {
             if (lastBrackets) {
-                std::cout << "Where are brackets???";
+                std::cout << "Where are brackets???\n";
                 Error = true;
                 return {};
             }
+            whereIsNumber = false;
             if (lastOperIsUnaryMinus) {
                 ret.emplace_back(i);
                 ret.emplace_back("_");
@@ -224,14 +226,14 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
 
         } else if (i == "+") {
             if (lastBrackets) {
-                std::cout << "Where are brackets???";
+                std::cout << "Where are brackets???\n";
                 Error = true;
                 return {};
             }
             lastOper = true;
             if (lastOperIsUnaryMinus) {
                 Error = true;
-                std::cout << "Too many operations";
+                std::cout << "Too many operations\n";
                 return {};
             }
             while (!operations.empty() && operations.back() != "(") {
@@ -242,19 +244,13 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
 
         } else if (i == "-") {
             if (lastBrackets) {
-                std::cout << "Where are brackets???";
+                std::cout << "Where are brackets???\n";
                 Error = true;
                 return {};
             }
 
             if (lastOper) {
-                if (lastOperIsUnaryMinus) {
-                    Error = true;
-                    std::cout << "Too many operations";
-                    return {};
-                } else {
-                    lastOperIsUnaryMinus = true;
-                }
+                lastOperIsUnaryMinus = !lastOperIsUnaryMinus;
             } else {
                 while (!operations.empty() && operations.back() != "(") {
                     ret.push_back(operations.back());
@@ -270,8 +266,14 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
             lastBrackets = false;
 
         } else if (i == ")") {
+            if (whereIsNumber) {
+                Error = true;
+                std::cout << "Why we still here, just to suffer?\nEvery night I can feel my legs and my arms, even my fingers.\nYou just need number)))\n";
+                return {};
+            }
+
             if (lastBrackets) {
-                std::cout << "Where are OPEN brackets???";
+                std::cout << "Where are OPEN brackets???\n";
                 Error = true;
                 return {};
             }
@@ -288,12 +290,12 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
 
         } else if (i == "*" || i == "/") {
             if (lastBrackets) {
-                std::cout << "Where are brackets???";
+                std::cout << "Where are brackets???\n";
                 Error = true;
                 return {};
             }
             while (!operations.empty() && operations.back() != "(" &&
-                   operations.back() != "+" && operations.back() != "-" && operations.back() != "^") {
+                   operations.back() != "+" && operations.back() != "-") {
                 ret.push_back(operations.back());
                 operations.pop_back();
             }
@@ -301,10 +303,17 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
             lastOper = true;
 
         } else if (i == "^") {
+            while (!operations.empty() && operations.back() != "(" &&
+            operations.back() != "+" && operations.back() != "-" && operations.back() != "^"
+            && operations.back() != "*" && operations.back() != "/") {
+                ret.push_back(operations.back());
+                operations.pop_back();
+            }
             operations.emplace_back("^");
             lastOper = true;
 
         } else {
+            whereIsNumber = true;
             operations.push_back(i);
             lastOper = true;
             lastBrackets = true;
@@ -312,7 +321,7 @@ std::deque<std::string> toPoland(std::vector<std::string>& str) {
     }
 
     if (!operations.empty()) {
-        std::cout << "А хде скобки еще?";
+        std::cout << "А хде скобки еще?\n";
         Error = true;
         return {};
     }
